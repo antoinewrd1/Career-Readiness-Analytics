@@ -1,0 +1,15 @@
+respondent_type,dimension,n_respondents,mean_score,sd_score,median_score,pct_of_max
+student,Career & Self-Development,840,2.917,0.862,3,72.9
+student,Technology,840,3.373,0.87,3.667,84.3
+student,Communication,841,3.207,0.837,3.5,80.2
+observer,Critical Thinking,990,3.3,0.777,3.5,82.5
+student,Leadership,839,3.069,0.872,3.333,76.7
+observer,Professionalism,1002,3.521,0.77,4,88
+observer,Leadership,962,3.137,0.819,3.333,78.4
+observer,Communication,1003,3.381,0.76,3.75,84.5
+observer,Teamwork,972,3.456,0.737,3.667,86.4
+student,Professionalism,841,3.41,0.891,4,85.3
+observer,Technology,962,3.48,0.772,4,87
+student,Critical Thinking,841,3.223,0.859,3.333,80.6
+student,Teamwork,837,3.364,0.852,3.667,84.1
+observer,Career & Self-Development,969,3.16,0.808,3.333,79

@@ -1,0 +1,22 @@
+# credentials - never commit
+**/profiles.yml
+!dbt_project/profiles.yml.example
+**/.env
+
+# raw and row-level data - privacy
+local_pipeline/data/raw/
+**/streamed_bronze/
+**/modeling_table.csv
+
+# generated artifacts
+**/target/
+**/lakehouse/
+**/mlruns/
+**/logs/
+**/.venv/
+**/__pycache__/
+**/dbt_packages/
+airflow_project/plugins/
+airflow_project/config/
+.DS_Store
+**/.user.yml

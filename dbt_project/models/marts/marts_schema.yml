@@ -1,0 +1,55 @@
+version: 2
+
+models:
+  - name: fct_respondent_dimension
+    description: Per-respondent, per-dimension mean score. The unit of analysis for every effect-size calculation downstream.
+    columns:
+      - name: dim_score
+        tests:
+          - not_null
+
+  - name: fct_competency_summary
+    description: Mean/median/sd/n per competency, split by respondent type. Replaces gold_competency_summary.
+    columns:
+      - name: n
+        tests:
+          - not_null
+
+  - name: fct_dimension_summary
+    description: Mean/median/sd/n per dimension, split by respondent type. Replaces gold_dimension_summary.
+    columns:
+      - name: respondent_type
+        tests:
+          - accepted_values:
+              values: ['student', 'observer']
+
+  - name: fct_dimension_rank
+    description: >
+      Strongest-to-weakest dimension ranking via SQL window functions
+      (RANK, DENSE_RANK, ROW_NUMBER). Replaces gold_dimension_rank.
+    columns:
+      - name: rank_strongest
+        description: 1 = strongest dimension for that respondent_type.
+        tests:
+          - not_null
+
+  - name: fct_perception_gap
+    description: >
+      Student mean minus supervisor mean per dimension, with pooled-SD
+      Cohen's d and a direction label. Replaces gold_perception_gap.
+    columns:
+      - name: dimension
+        tests:
+          - unique
+          - not_null
+      - name: gap
+        tests:
+          - not_null
+      - name: cohens_d
+        tests:
+          - not_null
+      - name: direction
+        tests:
+          - accepted_values:
+              arguments:
+                values: ['student over-rates', 'student under-rates', 'aligned']

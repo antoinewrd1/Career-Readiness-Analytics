@@ -1,0 +1,15 @@
+version: 2
+
+sources:
+  - name: bronze
+    description: >
+      Raw Delta tables populated by 01_bronze_ingestion.py (PySpark). dbt only
+      reads from these; they live in the ORIGINAL career_readiness schema,
+      separate from wherever this dbt project's own models materialize.
+    database: workspace
+    schema: career_readiness
+    tables:
+      - name: bronze_student
+        description: Raw student self-assessment survey responses, one row per submission.
+      - name: bronze_observer
+        description: Raw supervisor observer-assessment survey responses, one row per submission.

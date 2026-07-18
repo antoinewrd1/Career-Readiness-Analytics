@@ -1,0 +1,26 @@
+version: 2
+
+models:
+  - name: stg_student
+    description: >
+      One row per deduplicated student submission, with a deterministic
+      surrogate key and normalized org columns. 1:1 with the Bronze source
+      plus dedup; no joins, no aggregation.
+    columns:
+      - name: respondent_id
+        description: Deterministic surrogate key, format S_00001.
+        tests:
+          - unique
+          - not_null
+
+  - name: stg_observer
+    description: >
+      One row per deduplicated observer submission. Same pattern as
+      stg_student; note the `VP/Supervisory Org.` column carries a trailing
+      period in the source data that stg_student's equivalent column does not.
+    columns:
+      - name: respondent_id
+        description: Deterministic surrogate key, format O_00001.
+        tests:
+          - unique
+          - not_null

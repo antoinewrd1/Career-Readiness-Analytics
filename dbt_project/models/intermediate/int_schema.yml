@@ -1,0 +1,46 @@
+version: 2
+
+models:
+  - name: int_scores_long
+    description: >
+      The keystone long-format table: one row per respondent x competency.
+      Replaces silver_scores. Every downstream aggregation, ranking, and gap
+      calculation reads from this one table.
+    columns:
+      - name: respondent_type
+        tests:
+          - accepted_values:
+              values: ['student', 'observer']
+      - name: dimension
+        tests:
+          - accepted_values:
+              values:
+                - 'Career & Self-Development'
+                - 'Communication'
+                - 'Critical Thinking'
+                - 'Leadership'
+                - 'Professionalism'
+                - 'Teamwork'
+                - 'Technology'
+      - name: score
+        description: Validated 1-4 score, or null if out of range or missing.
+
+  - name: int_student_features
+    description: Cleaned and one-hot encoded student experience attributes. Replaces silver_student.
+    columns:
+      - name: respondent_id
+        tests:
+          - unique
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_student')
+                field: respondent_id
+
+  - name: int_observer_meta
+    description: Cleaned observer supervisory tenure. Replaces silver_observer.
+    columns:
+      - name: respondent_id
+        tests:
+          - unique
+          - not_null

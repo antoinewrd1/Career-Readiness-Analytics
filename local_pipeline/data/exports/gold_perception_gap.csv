@@ -1,0 +1,8 @@
+dimension,student_mean,student_sd,student_n,observer_mean,observer_sd,observer_n,gap,pooled_sd,cohens_d,direction
+Career & Self-Development,2.917,0.862,840,3.16,0.808,969,-0.243,0.833507689,-0.292,student under-rates
+Communication,3.207,0.837,841,3.381,0.76,1003,-0.174,0.796038359,-0.219,student under-rates
+Professionalism,3.41,0.891,841,3.521,0.77,1002,-0.111,0.827407008,-0.134,student under-rates
+Technology,3.373,0.87,840,3.48,0.772,962,-0.107,0.819139021,-0.131,student under-rates
+Teamwork,3.364,0.852,837,3.456,0.737,972,-0.092,0.792281821,-0.116,student under-rates
+Critical Thinking,3.223,0.859,841,3.3,0.777,990,-0.077,0.815684151,-0.094,student under-rates
+Leadership,3.069,0.872,839,3.137,0.819,962,-0.068,0.844102292,-0.081,student under-rates

@@ -1,0 +1,60 @@
+name: 'career_readiness'
+version: '1.0.0'
+config-version: 2
+
+profile: 'career_readiness'
+
+model-paths: ["models"]
+macro-paths: ["macros"]
+test-paths: ["tests"]
+clean-targets: ["target", "dbt_packages"]
+
+# The 22 competency columns, declared ONCE here instead of retyped in every
+# model. macros/unpivot_scores.sql and the staging models both loop over this
+# list with Jinja, so a survey schema change means editing one place, not
+# hunting through a dozen SQL files.
+vars:
+  competency_columns:
+    - "Career & Self-Development: Awareness of Strengths and Challenges"
+    - "Career & Self-Development: Professional Development"
+    - "Career & Self-Development: Networking"
+    - "Communication: Oral Communication"
+    - "Communication: Written Communication"
+    - "Communication: Non-verbal Communication"
+    - "Communication: Active Listening"
+    - "Critical Thinking: Display Situational Awareness"
+    - "Critical Thinking: Gather & Analyze Data"
+    - "Critical Thinking: Make Effective & Fair Decisions"
+    - "Leadership: Inspire, Persuade, & Motivate"
+    - "Leadership: Engage Various Resources & Seek Feedback"
+    - "Leadership: Facilitate Group Dynamics"
+    - "Professionalism: Act with Integrity"
+    - "Professionalism: Demonstrate Dependability"
+    - "Professionalism: Achieve Goals"
+    - "Teamwork: Build Relationships for Collaboration"
+    - "Teamwork: Respect Diverse Perspectives"
+    - "Teamwork: Integrate Strengths"
+    - "Technology: Leverage Technology"
+    - "Technology: Adapt to New Technologies"
+    - "Technology: Use Technology Ethically"
+  scale_min: 1.0
+  scale_max: 4.0
+
+# Materialization strategy:
+#   staging/intermediate -> view      (cheap, always reflect the latest Bronze data)
+#   marts                -> table     (what Power BI, the reports, and dashboards read from)
+#
+# NOTE: deliberately NOT using a per-folder `+schema:` override here. dbt's
+# default behavior CONCATENATES a custom schema onto your profile's target
+# schema (e.g. career_readiness_dbt_marts instead of career_readiness_dbt) -
+# a well-known first-project surprise. Keeping everything in one flat schema
+# and relying on the stg_/int_/fct_ naming prefixes instead is simpler to
+# reason about and easier to browse in Catalog Explorer.
+models:
+  career_readiness:
+    staging:
+      +materialized: view
+    intermediate:
+      +materialized: view
+    marts:
+      +materialized: table

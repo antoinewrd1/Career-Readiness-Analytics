@@ -1,0 +1,45 @@
+respondent_type,dimension,competency,n,mean_score,sd_score,median_score,min_score,max_score
+observer,Professionalism,Achieve Goals,976,3.48,0.821,4.0,1.0,4.0
+observer,Teamwork,Integrate Strengths,912,3.337,0.869,4.0,1.0,4.0
+observer,Communication,Non-verbal Communication,903,3.227,0.895,3.0,1.0,4.0
+observer,Career & Self-Development,Networking,871,3.124,0.931,3.0,1.0,4.0
+observer,Professionalism,Demonstrate Dependability,1001,3.489,0.881,4.0,1.0,4.0
+observer,Teamwork,Build Relationships for Collaboration,950,3.417,0.853,4.0,1.0,4.0
+observer,Critical Thinking,Gather & Analyze Data,880,3.315,0.823,4.0,1.0,4.0
+observer,Leadership,"Inspire, Persuade, & Motivate",887,3.061,0.925,3.0,1.0,4.0
+observer,Professionalism,Act with Integrity,998,3.612,0.794,4.0,1.0,4.0
+observer,Communication,Oral Communication,993,3.426,0.828,4.0,1.0,4.0
+observer,Teamwork,Respect Diverse Perspectives,952,3.65,0.744,4.0,1.0,4.0
+observer,Technology,Use Technology Ethically,914,3.573,0.817,4.0,1.0,4.0
+observer,Career & Self-Development,Awareness of Strengths and Challenges,945,3.219,0.851,3.0,1.0,4.0
+observer,Career & Self-Development,Professional Development,943,3.174,0.898,3.0,1.0,4.0
+observer,Communication,Written Communication,962,3.421,0.815,4.0,1.0,4.0
+observer,Communication,Active Listening,982,3.458,0.847,4.0,1.0,4.0
+observer,Critical Thinking,Display Situational Awareness,963,3.289,0.873,4.0,1.0,4.0
+observer,Leadership,Facilitate Group Dynamics,822,3.108,0.908,3.0,1.0,4.0
+observer,Leadership,Engage Various Resources & Seek Feedback,947,3.266,0.875,4.0,1.0,4.0
+observer,Technology,Adapt to New Technologies,927,3.442,0.825,4.0,1.0,4.0
+observer,Critical Thinking,Make Effective & Fair Decisions,947,3.352,0.85,4.0,1.0,4.0
+observer,Technology,Leverage Technology,941,3.478,0.805,4.0,1.0,4.0
+student,Technology,Use Technology Ethically,835,3.472,0.945,4.0,1.0,4.0
+student,Communication,Active Listening,837,3.373,0.965,4.0,1.0,4.0
+student,Critical Thinking,Display Situational Awareness,833,3.255,0.973,4.0,1.0,4.0
+student,Critical Thinking,Gather & Analyze Data,837,3.173,0.967,3.0,1.0,4.0
+student,Critical Thinking,Make Effective & Fair Decisions,837,3.239,0.956,4.0,1.0,4.0
+student,Technology,Adapt to New Technologies,837,3.297,0.962,4.0,1.0,4.0
+student,Professionalism,Achieve Goals,838,3.39,0.935,4.0,1.0,4.0
+student,Leadership,Facilitate Group Dynamics,833,2.999,1.018,3.0,1.0,4.0
+student,Career & Self-Development,Awareness of Strengths and Challenges,836,3.007,0.992,3.0,1.0,4.0
+student,Communication,Written Communication,836,3.218,0.981,4.0,1.0,4.0
+student,Teamwork,Respect Diverse Perspectives,837,3.529,0.928,4.0,1.0,4.0
+student,Career & Self-Development,Professional Development,834,2.969,0.983,3.0,1.0,4.0
+student,Leadership,"Inspire, Persuade, & Motivate",834,3.029,0.998,3.0,1.0,4.0
+student,Teamwork,Build Relationships for Collaboration,835,3.253,0.979,4.0,1.0,4.0
+student,Professionalism,Act with Integrity,841,3.447,0.986,4.0,1.0,4.0
+student,Leadership,Engage Various Resources & Seek Feedback,838,3.177,0.944,3.0,1.0,4.0
+student,Career & Self-Development,Networking,837,2.777,1.029,3.0,1.0,4.0
+student,Communication,Non-verbal Communication,836,2.998,0.995,3.0,1.0,4.0
+student,Communication,Oral Communication,840,3.238,0.969,4.0,1.0,4.0
+student,Professionalism,Demonstrate Dependability,838,3.388,0.962,4.0,1.0,4.0
+student,Technology,Leverage Technology,838,3.352,0.95,4.0,1.0,4.0
+student,Teamwork,Integrate Strengths,834,3.309,0.953,4.0,1.0,4.0

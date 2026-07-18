@@ -1,0 +1,278 @@
+---
+title: "Career Readiness: What Students See vs. What Supervisors See"
+subtitle: "Debrief: Career Readiness Survey Analysis"
+author: "Antoine Ward, MPH"
+date: today
+format:
+  revealjs:
+    slide-number: true
+    footer: "Career Readiness Analytics: 22 NACE-aligned competencies, 7 dimensions"
+    transition: fade
+    incremental: false
+  pptx: default            # `quarto render debrief.qmd --to pptx` for PowerPoint
+engine: knitr
+execute:
+  echo: false
+  warning: false
+  message: false
+---
+
+```{r setup}
+library(readr); library(dplyr); library(tidyr); library(ggplot2)
+
+dim_summary <- read_csv("data/exports/gold_dimension_summary.csv",   show_col_types = FALSE)
+gap         <- read_csv("data/exports/gold_perception_gap.csv",      show_col_types = FALSE)
+comp        <- read_csv("data/exports/gold_competency_summary.csv",  show_col_types = FALSE)
+
+C_STUDENT <- "#4C78A8"; C_OBSERVER <- "#F58518"
+C_UNDER   <- "#54A24B"; C_OVER     <- "#E45756"
+```
+
+## The question we asked {.smaller}
+
+**Do students and their workplace supervisors see student career readiness the same way?**
+
+- ~**840 students** rated themselves on 22 competencies
+- ~**1,000 supervisors** rated students on the *identical* 22
+- Competencies roll up to **7 NACE career readiness dimensions**
+- Rating scale: **1–4**
+
+::: {.fragment}
+Same questions, two vantage points, so every disagreement is a *perception gap* we can measure.
+:::
+
+## The headline finding
+
+::: {.r-fit-text}
+Students under-rate themselves
+
+on **all seven** dimensions.
+:::
+
+::: {.fragment}
+Not overconfidence: a **confidence gap**. The opposite of what the conventional wisdom predicts.
+:::
+
+## Self vs. supervisor, by dimension
+
+```{r dumbbell, fig.width=9, fig.height=5.2}
+wide <- dim_summary %>%
+  select(dimension, respondent_type, mean_score) %>%
+  pivot_wider(names_from = respondent_type, values_from = mean_score) %>%
+  mutate(dimension = reorder(dimension, (student + observer) / 2))
+
+ggplot(wide) +
+  geom_segment(aes(x = observer, xend = student, y = dimension, yend = dimension),
+               color = "grey70", linewidth = 1.2) +
+  geom_point(aes(x = student,  y = dimension, color = "Student (self)"), size = 5) +
+  geom_point(aes(x = observer, y = dimension, color = "Supervisor"),     size = 5) +
+  scale_color_manual(values = c("Student (self)" = C_STUDENT, "Supervisor" = C_OBSERVER)) +
+  scale_x_continuous(limits = c(2.5, 4), breaks = seq(2.5, 4, 0.5)) +
+  labs(x = "Mean score (1\u20134 scale)", y = NULL, color = NULL,
+       title = "Supervisors rate students higher on every dimension") +
+  theme_minimal(base_size = 15) +
+  theme(legend.position = "top")
+```
+
+## The full ranking {.smaller}
+
+Strongest to weakest, side by side
+
+```{r ranktable}
+rank_tbl <- dim_summary %>%
+  group_by(respondent_type) %>%
+  mutate(rank = min_rank(desc(mean_score))) %>%
+  ungroup() %>%
+  select(dimension, respondent_type, mean_score, rank) %>%
+  pivot_wider(names_from = respondent_type, values_from = c(mean_score, rank)) %>%
+  arrange(rank_student) %>%
+  select(Dimension = dimension,
+         `Student mean` = mean_score_student, `Student rank` = rank_student,
+         `Supervisor mean` = mean_score_observer, `Supervisor rank` = rank_observer)
+knitr::kable(rank_tbl, align = "lcccc")
+```
+
+::: {.fragment}
+The *order* barely changes between raters. Professionalism and Teamwork sit at the top for
+both; Leadership and Career & Self-Development sit at the bottom.
+:::
+
+## Where the gap is largest
+
+```{r gapchart, fig.width=9, fig.height=5.2}
+gap %>%
+  mutate(dimension = reorder(dimension, gap)) %>%
+  ggplot(aes(x = gap, y = dimension)) +
+  geom_col(fill = C_UNDER) +
+  geom_vline(xintercept = 0) +
+  geom_text(aes(label = sprintf("%+.2f", gap)), hjust = 1.15, size = 4.5, color = "white") +
+  labs(x = "Gap  (student mean \u2212 supervisor mean)", y = NULL,
+       title = "Every bar points the same way: students under-rate",
+       subtitle = "Largest under-estimates: Career & Self-Development, Communication") +
+  theme_minimal(base_size = 15)
+```
+
+## The numbers behind the gaps {.smaller}
+
+```{r gaptable}
+gap %>%
+  arrange(gap) %>%
+  transmute(Dimension   = dimension,
+            Student     = round(student_mean, 2),
+            Supervisor  = round(observer_mean, 2),
+            Gap         = round(gap, 2),
+            `Cohen's d` = round(cohens_d, 2)) %>%
+  knitr::kable(align = "lcccc")
+```
+
+::: {.fragment}
+Every row reads *student under-rates*: the pattern is perfectly consistent, even
+where the gap itself is small.
+:::
+
+## Two different "weakest" dimensions {.smaller}
+
+| Vantage point | Weakest dimension | Score |
+|---|---|---|
+| Students (self) | **Career & Self-Development** | 2.92 / 4 |
+| Supervisors | **Leadership** | 3.14 / 4 |
+
+::: {.fragment}
+That divergence *is* the insight:
+
+- **Leadership** is weakest by *external* assessment: the clear **skill-development** target
+- **Career & Self-Development** combines students' lowest self-rating *and* their largest under-estimate (−0.24): a **confidence & awareness** target, not just a skill one
+:::
+
+## Inside the dimensions: all 22 competencies {.smaller}
+
+```{r heatmap, fig.width=8.5, fig.height=6.2}
+comp %>%
+  mutate(rater = ifelse(respondent_type == "student", "Student", "Supervisor"),
+         competency = reorder(competency, mean_score)) %>%
+  ggplot(aes(x = rater, y = competency, fill = mean_score)) +
+  geom_tile(color = "white", linewidth = 0.4) +
+  geom_text(aes(label = sprintf("%.2f", mean_score)), size = 2.8) +
+  scale_fill_gradient2(low = C_OVER, mid = "#F7E9A0", high = C_UNDER,
+                       midpoint = mean(comp$mean_score), name = "Mean") +
+  facet_grid(dimension ~ ., scales = "free_y", space = "free_y",
+             labeller = label_wrap_gen(width = 14)) +
+  labs(x = NULL, y = NULL,
+       title = "Competency-level detail behind the dimension averages") +
+  theme_minimal(base_size = 11) +
+  theme(strip.text.y = element_text(angle = 0, size = 7, hjust = 0),
+        legend.position = "right",
+        axis.text.y = element_text(size = 7.5))
+```
+
+## What the heatmap adds {.smaller}
+
+Dimension averages can hide uneven competencies. Three details worth naming:
+
+- **Act with Integrity** and **Demonstrate Dependability** are the highest-rated
+  competencies overall: the engine behind Professionalism's top ranking.
+- Within Leadership, the weakness is not uniform: *Inspire, Persuade & Motivate*
+  sits lower than *Engage Resources & Seek Feedback*, so leadership programming
+  should target influence skills specifically, not leadership generically.
+- **Networking** is among students' lowest self-ratings, consistent with the
+  Career & Self-Development confidence story.
+
+## Individuals vary more than groups differ
+
+```{r spread, fig.width=9, fig.height=5.2}
+dim_summary %>%
+  mutate(rater = ifelse(respondent_type == "student", "Student (self)", "Supervisor")) %>%
+  ggplot(aes(x = mean_score, y = reorder(dimension, mean_score), color = rater)) +
+  geom_pointrange(aes(xmin = mean_score - sd_score, xmax = mean_score + sd_score),
+                  position = position_dodge(width = 0.55), linewidth = 0.9, size = 0.6) +
+  scale_color_manual(values = c("Student (self)" = C_STUDENT, "Supervisor" = C_OBSERVER)) +
+  scale_x_continuous(limits = c(1, 4), breaks = 1:4) +
+  labs(x = "Mean score \u00b1 1 standard deviation (1\u20134 scale)", y = NULL, color = NULL,
+       title = "The spread within each group dwarfs the gap between groups",
+       subtitle = "Each bar spans \u00b11 SD: the range where most individual ratings fall") +
+  theme_minimal(base_size = 15) +
+  theme(legend.position = "top")
+```
+
+## How big are these gaps, honestly? {.smaller}
+
+**Cohen's d** answers one question: *"Is this gap large enough to matter, or
+just noise?"* It rescales the raw gap by how spread out people's scores
+naturally are: the spread you just saw. A 0.24-point gap on a tight,
+consistent dimension counts for more than the same 0.24 points where scores
+bounce around.
+
+::: {.fragment}
+**Rule of thumb:**
+
+| \|d\| | Interpretation |
+|---|---|
+| ~0.2 | small (barely noticeable) |
+| ~0.5 | medium (visible in practice) |
+| ~0.8+ | large (hard to miss) |
+:::
+
+::: {.fragment}
+Our largest gap (Career & Self-Development) is **d = −0.29** (small).
+**No dimension reaches 0.5.**
+
+**Translation:** students and supervisors are *broadly calibrated*. These gaps
+are **monitor items, not crises**, but their perfect directional consistency
+(7 of 7 negative) is a real pattern worth acting on regardless of size.
+:::
+
+## One agreement worth noting
+
+```{python professionalism}
+# Python via reticulate: competency detail behind the shared top strength
+import pandas as pd
+dim = pd.read_csv("data/exports/gold_dimension_summary.csv")
+prof = (dim[dim["dimension"] == "Professionalism"]
+        [["respondent_type", "mean_score", "n_respondents"]]
+        .rename(columns={"respondent_type": "Rated by",
+                         "mean_score": "Mean (1-4)",
+                         "n_respondents": "N"}))
+prof["Rated by"] = prof["Rated by"].str.title()
+print(prof.to_string(index=False))
+```
+
+Both groups rank **Professionalism** as the top strength (3.41 self, 3.52 supervisor). Agreement at the top says the assessment is coherent, which strengthens confidence in the gaps.
+
+## Recommendations {.smaller}
+
+::: {.incremental}
+1. **Build skills where supervisors see the need: Leadership** (3.14/4).
+   Prioritize facilitation, delegation, and peer-leadership practice inside
+   experiential placements (e.g., rotate students through a project-lead
+   role for at least one deliverable per placement).
+2. **Build confidence where students underclaim: Career & Self-Development.**
+   Students demonstrate more competence than they recognize; add structured
+   self-assessment checkpoints and strengths-based reflection at the
+   midpoint and end of each placement.
+3. **Close the calibration loop: structured supervisor feedback.**
+   The uniform under-rating suggests students rarely *hear* how supervisors
+   rate them. Build a short mid-placement feedback conversation into every
+   experiential learning opportunity; even 15 minutes moves the needle.
+4. **Track this survey longitudinally.** Re-run it each term to see whether
+   the gap narrows as feedback practices take hold, turning this one-time
+   snapshot into a measure of program impact.
+:::
+
+## Methodology & caveats {.smaller}
+
+- **Pipeline:** medallion lakehouse (Bronze → Silver → Gold) on Databricks; analysis
+  reproducible in SQL, PySpark, and R
+- **Unit of analysis:** dimension scores averaged *within respondent first*; effect
+  sizes count people, not survey items
+- **Unpaired comparison:** student and supervisor pools, not matched pairs; gaps
+  describe *group-level* divergence, not individual miscalibration
+- **Cross-sectional:** associations, not causal claims
+- **Scale note:** Equity & Inclusion (8th NACE competency) was not surveyed
+
+## Questions
+
+**Code, data pipeline, and full write-up:**
+github.com/antoinewrd1/career-readiness-analytics
+
+*Analysis: Databricks (PySpark, Spark SQL, Delta Lake) · R (dplyr, ggplot2) ·
+Python (pandas, matplotlib) · Power BI*

@@ -1,0 +1,58 @@
+# Single-node Kafka, KRaft mode (no ZooKeeper container needed).
+#
+# The three-listener setup below exists to solve the #1 cause of "producer
+# connects once then silently fails": Kafka needs a DIFFERENT advertised
+# address depending on who's connecting.
+#   - PLAINTEXT   (port 29092) -> for OTHER CONTAINERS on the Docker network
+#                                  (e.g. Kafka UI), reachable as "kafka:29092"
+#   - CONTROLLER  (port 29093) -> internal KRaft coordination, never used by
+#                                  producer/consumer code
+#   - PLAINTEXT_HOST (port 9092) -> for your NATIVE Python scripts running on
+#                                    Windows, reachable as "localhost:9092"
+#
+# If producer.py / consumer.py can connect and list topics but then hang or
+# error on actually producing/consuming, mismatched listeners are the first
+# thing to suspect.
+
+services:
+  kafka:
+    image: confluentinc/cp-kafka:7.6.1
+    container_name: kafka
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: 'broker,controller'
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT'
+      KAFKA_LISTENERS: 'PLAINTEXT://kafka:29092,CONTROLLER://kafka:29093,PLAINTEXT_HOST://0.0.0.0:9092'
+      KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092'
+      KAFKA_CONTROLLER_QUORUM_VOTERS: '1@kafka:29093'
+      KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      # Any fixed string works for a single-node dev cluster; it just has to
+      # be present and consistent across restarts of the same data volume.
+      CLUSTER_ID: '4L6g3nShT-eMCtK--X86sw'
+    healthcheck:
+      test: ["CMD-SHELL", "kafka-broker-api-versions --bootstrap-server localhost:9092 || exit 1"]
+      interval: 10s
+      timeout: 10s
+      retries: 6
+      start_period: 20s
+
+  # Optional but recommended: a web UI to visually confirm topics and
+  # messages exist, rather than relying purely on script console output.
+  # Browse to http://localhost:8090 once containers are up.
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    container_name: kafka-ui
+    ports:
+      - "8090:8080"
+    environment:
+      KAFKA_CLUSTERS_0_NAME: local
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:29092
+    depends_on:
+      kafka:
+        condition: service_healthy
